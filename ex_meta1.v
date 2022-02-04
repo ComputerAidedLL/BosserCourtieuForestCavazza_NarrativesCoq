@@ -127,59 +127,24 @@ Lemma exists_AtheseA_on_formula_proof_eq_compat :
 Proof.
   intros f1 f2 Γ Γ' φ h1 h2 H.
   induction H;simpl.
-
-  Focus.    
-  reflexivity.
-
-  Focus.
-  auto.    
-  
-  apply IHeq2.
-
-  Focus.
-  rewrite IHeq1;rewrite IHeq2;reflexivity.
-
-  Focus.
-  rewrite IHeq;reflexivity.
-
-  Focus.
-  reflexivity.
-
-  Focus.
-  rewrite IHeq;reflexivity.
-
-  Focus.
-  rewrite IHeq1;rewrite IHeq2;reflexivity.
-
-  Focus.
-  rewrite IHeq;reflexivity.
-
-  Focus.
-  rewrite IHeq;reflexivity.
-
-  Focus.
-  rewrite IHeq1;rewrite IHeq2;reflexivity.
-
-  Focus.
-  rewrite IHeq;reflexivity.
-
-  Focus.
-  rewrite IHeq;reflexivity.
-
-  Focus.
-  reflexivity.
-
-  Focus.
-  reflexivity.
-
-  Focus.
-  rewrite IHeq;reflexivity.
-
-  Focus.
-  rewrite IHeq;reflexivity.
-
-  Focus.
-  rewrite IHeq;reflexivity.
+  - reflexivity.
+  - auto.
+  - apply IHeq2.
+  - rewrite IHeq1;rewrite IHeq2;reflexivity.
+  - rewrite IHeq;reflexivity.
+  - reflexivity.
+  - rewrite IHeq;reflexivity.
+  - rewrite IHeq1;rewrite IHeq2;reflexivity.
+  - rewrite IHeq;reflexivity.
+  - rewrite IHeq;reflexivity.
+  - rewrite IHeq1;rewrite IHeq2;reflexivity.
+  - rewrite IHeq;reflexivity.
+  - rewrite IHeq;reflexivity.
+  - reflexivity.
+  - reflexivity.
+  - rewrite IHeq;reflexivity.
+  - rewrite IHeq;reflexivity.
+  - rewrite IHeq;reflexivity.
 Qed.
 
 Lemma exists_AtheseA_on_formula_proof_eq_pre_morph_compat : 
@@ -204,11 +169,11 @@ Proof with try solve [ apply Id;reflexivity | prove_multiset_eq].
   weak_impl_l B S...
   apply Oplus_R_1...
 
-(* 
+(*
   and_l_2 (B ⊸ S) (B ⊸ R).
   weak_impl_l B R...
   apply Oplus_R_2...
- *)
+*)
 
   weak_impl_l G S...
   and_l_2 ((B ⊸ S) & (B ⊸ R)) 1.
@@ -221,13 +186,13 @@ Eval vm_compute in exists_AtheseA_on_formula (fun _ _ _ => trueP) A M _ _ origin
 Eval vm_compute in exists_AtheseA_on_formula (fun _ _ _ => trueP) S R _ _ originelle.
 Eval vm_compute in (exists_AtheseA_on_formula (fun _ _ _ => trueP) S R _ _ simple).
 Eval vm_compute in (exists_AtheseA_on_formula (fun _ _ _ => trueP) R S _ _ simple).
-  
+
 Definition all_proofs_of env gamma := (forall (p:env⊢gamma), exists_AtheseA_on_formula (fun _ _ _ => trueP) S R _ _ p =trueP).
 
 Definition no_proof_for env gamma := (forall (p:env⊢gamma), False).
-Hint Unfold all_proofs_of no_proof_for : proof.
+#[local] Hint Unfold all_proofs_of no_proof_for : proof.
 
-Lemma all_proofs_of_pre_morph : forall φ Γ Γ',  
+Lemma all_proofs_of_pre_morph : forall φ Γ Γ',
   all_proofs_of Γ φ -> eq_bool Γ Γ' = true -> all_proofs_of Γ' φ.
 Proof.
   unfold all_proofs_of.
@@ -239,18 +204,18 @@ Proof.
       destruct h as [p' h].
       rewrite exists_AtheseA_on_formula_proof_eq_compat with (h2:=p') (1:=h); auto.
 Qed.
-Hint Resolve all_proofs_of_pre_morph : proof.
+#[local] Hint Resolve all_proofs_of_pre_morph : proof.
 
 
 Lemma all_proofs_of_pre_morph' : 
-  forall φ Γ Γ', all_proofs_of Γ φ -> eq_bool Γ Γ' = true -> 
+  forall φ Γ Γ', all_proofs_of Γ φ -> eq_bool Γ Γ' = true ->
     forall (p:Γ'⊢φ), exists_AtheseA_on_formula (fun _ _ _ => trueP) S R _ _ p =trueP.
 Proof.
   intros φ Γ Γ' H H0 p.  
   eapply all_proofs_of_pre_morph;eassumption.
 Qed.
-Hint Resolve all_proofs_of_pre_morph' : proof.
-Hint Rewrite all_proofs_of_pre_morph' : proof.
+#[local] Hint Resolve all_proofs_of_pre_morph' : proof.
+#[local] Hint Rewrite all_proofs_of_pre_morph' : proof.
 Require Import Setoid.
 Add Morphism all_proofs_of with signature (eq ==> Logic.eq ==> iff) as
 all_proof_of_morph.
@@ -261,15 +226,15 @@ Proof.
   apply eq_bool_complete;symmetry;assumption.
 Qed.
 
-Hint Extern 0 ( _ ==  _ ) => apply eq_bool_correct;vm_compute;reflexivity : proof.
+#[local] Hint Extern 0 ( _ ==  _ ) => apply eq_bool_correct;vm_compute;reflexivity : proof.
 
 
-Ltac titi p := 
-  try complete eauto 2 with proof;
+Ltac titi p :=
+  try (now eauto 2 with proof);
     (dependent simple inversion p||inversion p);clear p;subst;try discriminate;simpl.
 
 
-Ltac decompose_add := 
+Ltac decompose_add :=
     repeat (match goal with 
             | H : _ ∈ (_ :: _) |- _  => 
               destruct (mem_destruct _ _ _ H);clear H
@@ -286,13 +251,12 @@ elim unusable_var_in_env with (n:=n') (1:=H);
   vm_compute;reflexivity |
   vm_compute;reflexivity |
     intros;decompose_add;simpl in *;repeat split;try discriminate;reflexivity
-]
-.
+].
 
 Ltac var_not_in_env_tac_aux H env := 
   match env with 
     | Proposition ?n::?env' =>
-      (complete (var_not_in_env_tac_simple n H)) || 
+      (now (var_not_in_env_tac_simple n H)) || 
         var_not_in_env_tac_aux H env'
     | _ :: ?env' =>  var_not_in_env_tac_aux H env'
   end.
@@ -327,7 +291,7 @@ Ltac is_var_env gamma :=
                   end
                 | _ => clear H
               end
-          
+
             | H : ?t = ?t |- _ => clear H
             | H : ?t == ?t |- _ => clear H
             | H:_ :: _ == _ ∪ _ |- _ => 
@@ -440,25 +404,25 @@ Ltac finish :=
 *)
 
 
-Ltac finish := 
+Ltac finish :=
   simpl;try reflexivity;
     try discriminate;
-    try complete auto with proof;
+    try (now auto with proof);
     try autorewrite with proof;
-      try complete (apply False_ind;auto with proof);
+      try (now (apply False_ind;auto with proof));
       match goal with 
-        |- (if ?e then trueP else trueP ) = trueP => 
+        |- (if ?e then trueP else trueP ) = trueP =>
           case e;reflexivity
         | i:?e⊢Proposition ?n' |- _ => 
           elim var_in_env with (n:=n') (3:=i);vm_compute;reflexivity
         | H: ?env⊢?g |- _ =>
-          complete var_not_in_env_tac H
+          now var_not_in_env_tac H
         | H : ?s == ?t |- _ => 
-          (complete (apply eq_bool_complete in H;vm_compute in H;
+          (now (apply eq_bool_complete in H;vm_compute in H;
             discriminate))|| (progress repeat (rewrite H in * ))
       end.
 
-Ltac tutu := 
+Ltac tutu :=
   simpl;try reflexivity;
     try discriminate;
       (* try complete auto with proof; *)
@@ -466,25 +430,25 @@ Ltac tutu :=
           match goal with
             | H : ?t = ?t |- _ => clear H
             | H : ?t == ?t |- _ => clear H
-            | H:_ :: _ == _ ∪ _ |- _ => 
+            | H:_ :: _ == _ ∪ _ |- _ =>
               symmetry in H
-            | H: _ ∪ _ == _ :: _ |- _ => 
+            | H: _ ∪ _ == _ :: _ |- _ =>
               let delta := fresh "Δ" in
-                let h1 := fresh "H" in 
-                  let h2 := fresh "H" in 
-                    destruct (union_decompose _ _ _ _ H) 
+                let h1 := fresh "H" in
+                  let h2 := fresh "H" in
+                    destruct (union_decompose _ _ _ _ H)
                       as [[delta [h1 h2]]|[delta [h1 h2]]];clear H
-            | H: empty == _ ∪ _ |- _ => 
+            | H: empty == _ ∪ _ |- _ =>
               symmetry in H
-            | H: _ ∪ _ == empty |- _ => 
+            | H: _ ∪ _ == empty |- _ =>
               let h1 := fresh "H" in 
                 let h2 := fresh "H" in 
                   destruct (union_empty_decompose _ _  H) as [h1 h2];
                     clear H
-            | H : ?t == _ |- _ => 
+            | H : ?t == _ |- _ =>
               is_var_env t;
               match goal with 
-                | H': context [t] |- _ => 
+                | H': context [t] |- _ =>
                   match H' with 
                     | H => fail 1
                     | _ => fail 2
@@ -493,8 +457,8 @@ Ltac tutu :=
               end
             | H: ILLVarInt.MILL.eq _ _ |- _ => apply eq_is_eq in H; try (injection H;clear H;intros;subst)
 
-            | H: _ ∈ _ |- _ => complete (vm_compute in H;discriminate)
-            | H: _ ∈ (add _ _) |- _ =>   
+            | H: _ ∈ _ |- _ => now (vm_compute in H;discriminate)
+            | H: _ ∈ (add _ _) |- _ =>
               destruct (mem_destruct _ _ _ H);clear H
             (* | H : ?s == ?t |- _ =>  *)
             (*   (complete (apply eq_bool_complete in H;vm_compute in H; *)
@@ -523,20 +487,20 @@ Ltac tutu :=
               try discriminate H;injection H;clear H;intros;subst
             | H: _ = _  & _ |- _  => 
               try discriminate H;injection H;clear H;intros;subst
-            | H: ?delta ⊢ _, H' : ?delta == ∅ |- _ => 
+            | H: ?delta ⊢ _, H' : ?delta == ∅ |- _ =>
               apply False_ind;rewrite H' in H;clear - H;titi H;finish
             | H: ?env⊢?g |- _ =>
               (* try complete var_not_in_env_tac H;  *)
                 match env with 
-                  | context C' [?env' \ ?f] => 
+                  | context C' [?env' \ ?f] =>
                     match env' with 
-                      | context C [add f ?env''] => 
-                        let e' := context C [ env'' ] in 
-                          let e := context C' [ e' ] in 
+                      | context C [add f ?env''] =>
+                        let e' := context C [ env'' ] in
+                          let e := context C' [ e' ] in
                             assert (heq: e == env) by (apply eq_bool_correct;vm_compute;reflexivity);
                               symmetry in heq;
-                                let h := fresh "H" in 
-                                  let i' := fresh "i" in 
+                                let h := fresh "H" in
+                                  let i' := fresh "i" in
                                     assert (h:(exists i':ILL_proof e g, Proof_eq.eq H i')) by (exists (ILL_proof_pre_morph _ _ _ heq H);
                                       apply Proof_eq.sym;
                                     apply Proof_eq.eq_pre_morph);
@@ -545,19 +509,19 @@ Ltac tutu :=
               clear H h heq
 end
 end
-            | H: ?t == ?t', i: ?env⊢?f |- _ => 
-              match env with 
-                | context [ t ] => 
-                  let f_env := 
+            | H: ?t == ?t', i: ?env⊢?f |- _ =>
+              match env with
+                | context [ t ] =>
+                  let f_env :=
                     match eval pattern t in env with
                       | ?f _ => f
                     end
                     in
-                    let env'0 := constr:(f_env t')  in 
-                      let env' := eval cbv beta iota in env'0 in 
-                        let h := fresh "H" in 
-                          let i' := fresh "i" in 
-                            let heq := fresh "heq" in 
+                    let env'0 := constr:(f_env t')  in
+                      let env' := eval cbv beta iota in env'0 in
+                        let h := fresh "H" in
+                          let i' := fresh "i" in
+                            let heq := fresh "heq" in
                               assert (h:exists i': env'⊢f, Proof_eq.eq i i');[
                                 assert (heq:env'==env) by (rewrite H;reflexivity);
                                   symmetry in heq;
@@ -790,10 +754,10 @@ Qed.
 
 
 
-Hint Resolve aux3 aux4 aux4' aux2 aux6 aux8 aux9 aux9' aux9's
+#[local] Hint Resolve aux3 aux4 aux4' aux2 aux6 aux8 aux9 aux9' aux9's
   aux10 aux11 aux12 aux7 aux5 aux13 aux16 aux15
   aux18 aux18s aux19 aux17 aux10' aux10's aux21
-  aux15s aux4's aux20 aux10'r aux22 aux14:proof.
+  aux15s aux4's aux20 aux10'r aux22 aux14 : proof.
 
 
 Lemma aux23 : no_proof_for ({(B ⊸ S) & (B ⊸ R), G, (G ⊸ B) ⊕ (G ⊸ S)}) R.
@@ -811,7 +775,7 @@ Qed.
 Lemma aux6' : no_proof_for ({G, (G ⊸ B) ⊕ (G ⊸ S)}) (S⊕R).
 Proof.
   intros p. one_step p.
-  
+
   apply aux25. assumption.
 
   apply aux6''. assumption.
@@ -830,18 +794,18 @@ Lemma aux24 : no_proof_for ({1, G, (G ⊸ B) ⊕ (G ⊸ S)}) (S ⊕ R).
 
   apply aux6'. assumption.
   apply aux26. assumption.
-  
+
   apply aux24s. assumption.
 Qed.
 
-Hint Resolve aux23 aux25 aux6'' aux6'  aux26 aux24s aux24.
+#[local] Hint Resolve aux23 aux25 aux6'' aux6'  aux26 aux24s aux24 : core.
 
 Lemma aux1 : all_proofs_of ({(B ⊸ S) & (B ⊸ R), G, (G ⊸ B) ⊕ (G ⊸ S)}) (S ⊕ R).
   intros p; one_step p.
 Qed.
 Lemma aux27r : no_proof_for ({G ⊸ S, G, ((B ⊸ S) & (B ⊸ R)) & 1}) R.
   intros p; one_step p.
-Qed.  
+Qed.
 
 Lemma aux31 : no_proof_for ({G, ((B ⊸ S) & (B ⊸ R)) & 1, (G ⊸ B) ⊕ (G ⊸ S)}) R.
   intros p.
@@ -862,7 +826,7 @@ Lemma aux28 : all_proofs_of ({S, ((B ⊸ S) & (B ⊸ R)) & 1}) (S ⊕ R).
   apply aux30.
 Qed.
 
-Hint Resolve aux27r aux31 aux29 aux30 aux28.
+#[local] Hint Resolve aux27r aux31 aux29 aux30 aux28 : core.
 
 Lemma aux32 : no_proof_for ({(B ⊸ S) & (B ⊸ R), G ⊸ S, G}) (S ⊕ R).
   intros p; one_step p.
@@ -883,7 +847,7 @@ Lemma aux27 : all_proofs_of ({G ⊸ S, G, ((B ⊸ S) & (B ⊸ R)) & 1}) (S ⊕ R
   apply aux33.
 Qed.
 
-Hint Resolve aux34 aux33 aux27.
+#[local] Hint Resolve aux34 aux33 aux27 : core.
 
 Lemma final: all_proofs_of ({ G,((B⊸S)&(B⊸R))&1,(G⊸B)⊕(G⊸S)}) (S⊕R).
 Proof.

@@ -19,10 +19,10 @@ Require Import ILL_spec.
 Require Import OrderedType.
 Require Import Utf8_core.
 Require Import vars.
+Require multiset.
 
 Module ILL_Make(Vars : OrderedType)<:ILL_sig(Vars).
   Include formulas.Make(Vars).
-  Require multiset.
   Module Import FormulaMultiSet := multiset.MakeList(FormulaOrdered).
 
   Reserved Notation "x ⊢ y" (at level 70, no associativity).
@@ -97,7 +97,7 @@ Module ILL_Make(Vars : OrderedType)<:ILL_sig(Vars).
   Proof.
     exact remove_morph_eq.
   Qed.
-  
+
   Add Relation formula FormulaOrdered.eq
   reflexivity proved by FormulaOrdered.eq_refl
   symmetry proved by FormulaOrdered.eq_sym
@@ -127,92 +127,56 @@ Module ILL_Make(Vars : OrderedType)<:ILL_sig(Vars).
     intros φ Γ Γ' Heq H.
     revert Γ' Heq.
     induction H;intros Γ' Heq.
+    - constructor 1.
+      rewrite <- Heq;assumption.
+    - constructor 2.
+      apply IHILL_proof.
+      rewrite Heq;reflexivity.
+    - rewrite Heq in H.
+      rewrite Heq in H0.
+      econstructor; now eauto.
+    - rewrite Heq in H.
+      econstructor; eassumption.
+    - rewrite Heq in H.
+      econstructor 5. 
+      eexact H.
+      apply IHILL_proof.
+      rewrite Heq.
+      reflexivity.
+    - constructor 6.
+      rewrite <-Heq;assumption.
+    - rewrite Heq in H.
+      econstructor 7.
+      eassumption.
+      apply IHILL_proof.
+      rewrite Heq;reflexivity.
+    - econstructor; now eauto.
+    - econstructor 9.
+      rewrite Heq in H;eexact H.
+      apply IHILL_proof. rewrite Heq;reflexivity.
+    - econstructor 10.
+      rewrite Heq in H;eexact H.
+      apply IHILL_proof. rewrite Heq;reflexivity.
+    - econstructor 11.
+      rewrite Heq in H;eexact H.
+      apply IHILL_proof1;rewrite Heq;reflexivity.
+      apply IHILL_proof2;rewrite Heq;reflexivity.
+    - econstructor; now eauto.
+    - constructor; now auto.
+    - constructor; fail.
+    - constructor 15.
+      rewrite <- Heq;assumption.
+    - econstructor 16.
+      rewrite Heq in H;eexact H.
+      apply IHILL_proof;rewrite Heq;reflexivity.
+    - econstructor 17.
+      rewrite Heq in H;eexact H.
+      apply IHILL_proof;rewrite Heq;reflexivity.
+    - econstructor 18.
+      rewrite Heq in H;eexact H.
+      apply IHILL_proof;rewrite Heq;reflexivity.
+  Defined.
 
-    Focus 1.
-    constructor 1.
-    rewrite <- Heq;assumption.
-
-    Focus 1.
-    constructor 2.
-    apply IHILL_proof.
-    rewrite Heq;reflexivity.
-
-    Focus 1.
-    rewrite Heq in H.
-    rewrite Heq in H0.
-    econstructor (complete eauto).
-
-    Focus 1.
-    rewrite Heq in H.
-    econstructor eassumption.
-
-    Focus 1.
-    rewrite Heq in H.
-    econstructor 5. 
-    eexact H.
-    apply IHILL_proof.
-    rewrite Heq.
-    reflexivity.
-
-    Focus 1. 
-    constructor 6.
-    rewrite <-Heq;assumption.
-
-    Focus 1.
-    rewrite Heq in H.
-    econstructor 7.
-    eassumption.
-    apply IHILL_proof.
-    rewrite Heq;reflexivity.
-
-    Focus 1.
-    econstructor (complete eauto).     
-
-    Focus 1.
-    econstructor 9.
-    rewrite Heq in H;eexact H.
-    apply IHILL_proof. rewrite Heq;reflexivity.
-
-    Focus 1.
-    econstructor 10.
-    rewrite Heq in H;eexact H.
-    apply IHILL_proof. rewrite Heq;reflexivity.
-
-    Focus 1.
-    econstructor 11.
-    rewrite Heq in H;eexact H.
-    apply IHILL_proof1;rewrite Heq;reflexivity.
-    apply IHILL_proof2;rewrite Heq;reflexivity.
-
-    Focus 1.
-    econstructor (complete eauto). 
-
-    Focus 1.
-    constructor (complete auto).
-
-    Focus 1.
-    constructor fail.
-
-    Focus 1.
-    constructor 15.
-    rewrite <- Heq;assumption.
-
-    Focus 1.
-    econstructor 16.
-    rewrite Heq in H;eexact H.
-    apply IHILL_proof;rewrite Heq;reflexivity.
-
-    Focus 1.
-    econstructor 17.
-    rewrite Heq in H;eexact H.
-    apply IHILL_proof;rewrite Heq;reflexivity.
-
-    Focus 1.
-    econstructor 18.
-    rewrite Heq in H;eexact H.
-    apply IHILL_proof;rewrite Heq;reflexivity.
-  Defined. 
-  
 
   (* On peut réécrire à l'intérieur d'un ⊢. *)
   Add Morphism ILL_proof with signature (FormulaMultiSet.eq ==> Logic.eq ==> iff) as ILL_proof_morph.
@@ -238,16 +202,16 @@ Module ILL_tactics(Vars:OrderedType)(M:ILL_sig(Vars)).
         setoid_rewrite union_rec_left
           ||setoid_rewrite union_empty_left
             || setoid_rewrite union_empty_right
-              || (setoid_rewrite (remove_diff_add);[|complete (simpl;intuition eauto)])
-                ||(setoid_rewrite remove_same_add;[| complete(simpl;intuition eauto)])
+              || (setoid_rewrite (remove_diff_add);[|now (simpl;intuition eauto)])
+                ||(setoid_rewrite remove_same_add;[|now (simpl;intuition eauto)])
       ));
-      complete (
+      now (
         repeat (reflexivity
-          || match goal with 
-               | |- eq (add ?phi ?env) (add ?phi ?env') => 
+          || match goal with
+               | |- eq (add ?phi ?env) (add ?phi ?env') =>
                  setoid_replace env with env';[reflexivity|]
-               | |- eq (add ?phi _) ?env => 
-                 match env with 
+               | |- eq (add ?phi _) ?env =>
+                 match env with
                    | context[(add ?phi' (add phi ?env))] => 
                      setoid_rewrite (add_comm phi' phi env)
                  end 

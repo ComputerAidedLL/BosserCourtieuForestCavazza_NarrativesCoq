@@ -3,7 +3,7 @@ Require ILLVarInt. (* Don't want import it. *)
 Import ILLVarInt.MILL. (* only this *)
 Import FormulaMultiSet. (* and this *)
 
-Set Printing All.
+(* Set Printing All. *)
 Inductive Istable (pred:∀ e f (h: e ⊢ f), Prop): ∀ e f (h: e ⊢ f) , Prop := 
 | IId: ∀ Γ (f:formula) (heq:Γ == {f}), Istable pred Γ f (Id _ _ heq)
 | IImpl_R: ∀ Γ p q (h:(p :: Γ ⊢ q)), pred _ _ h → Istable pred _ _ (Impl_R Γ p q h)
@@ -251,7 +251,7 @@ Proof.
   assert (h:arr (p ⊸ q)).
   apply H0;assumption.
   inversion h;clear h;subst.
-  constructor assumption.
+  constructor; assumption.
   inversion H.
 
   destruct (mem_destruct _ _ _ H);clear H.
@@ -280,12 +280,12 @@ Proof.
   assert (h':arr (p ⊗ q)).
   auto.
   inversion h';clear h';subst.
-  inversion H;constructor assumption.
+  inversion H;constructor; assumption.
   destruct (mem_destruct _ _ _ H2) as [H3| H3];clear H2.
   apply eq_is_eq in H3;subst.
   assert (h':arr (p ⊗ q)) by  auto.
   inversion h';clear h';subst.
-  inversion H;constructor assumption.
+  inversion H;constructor; assumption.
   apply mem_remove_2 in H3;auto.
 
   apply mem_remove_2 in H;auto.
@@ -294,7 +294,7 @@ Proof.
   apply eq_is_eq in H3;subst.
   assert (h':arr (p & q)) by  auto.
   inversion h';clear h';subst.
-  inversion H;constructor assumption.
+  inversion H;constructor; assumption.
   apply mem_remove_2 in H3;auto.
 
 
@@ -302,21 +302,21 @@ Proof.
   apply eq_is_eq in H3;subst.
   assert (h':arr (p & q)) by  auto.
   inversion h';clear h';subst.
-  inversion H;constructor assumption.
+  inversion H;constructor; assumption.
   apply mem_remove_2 in H3;auto.
 
   destruct (mem_destruct _ _ _ H) as [H3| H3];clear H.
   apply eq_is_eq in H3;subst.
   assert (h':arr (p ⊕ q)) by  auto.
   inversion h';clear h';subst.
-  inversion H;constructor assumption.
+  inversion H;constructor; assumption.
   apply mem_remove_2 in H3;auto.
 
   destruct (mem_destruct _ _ _ H) as [H3| H3];clear H.
   apply eq_is_eq in H3;subst.
   assert (h':arr (p ⊕ q)) by  auto.
   inversion h';clear h';subst.
-  inversion H;constructor assumption.
+  inversion H;constructor; assumption.
   apply mem_remove_2 in H3;auto.
 
   inversion H1.
@@ -325,16 +325,14 @@ Proof.
   assert (arr 0) by auto.
   inversion H.
   inversion H2.
-  
+
   destruct (mem_destruct _ _ _ H) as [H3| H3];clear H.
   apply eq_is_eq in H3;subst.
   assert (h':arr (!p)) by  auto.
   inversion h';clear h';subst.
-  inversion H;constructor assumption.
+  inversion H;constructor; assumption.
   apply mem_remove_2 in H3;auto.
 
   apply mem_remove_2 in H;auto.
 
-Qed.  
-
-
+Qed.
