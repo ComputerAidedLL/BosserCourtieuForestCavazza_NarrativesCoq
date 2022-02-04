@@ -1,0 +1,19 @@
+-R . ILLNarratives
+
+basic.v
+emma_orig.v
+ex_meta1.v
+ex_meta2.v
+formulas_spec.v
+formulas.v
+ILL_equiv.v
+ILL_spec.v
+ILL.v
+ILLVarInt.v
+multiset_spec.v
+multiset.v
+narrative.v
+restrict2.v
+restrict.v
+unprove.v
+vars.v
