@@ -5,7 +5,6 @@ Import ILLVarInt.MILL. (* only this *)
 Import FormulaMultiSet. (* and this *)
 Require Import ILL_equiv.
 Require Import emma_orig.
-Require Import JMeq.
 Open Scope ILL_scope.
 Open Scope Emma.
 
@@ -14,7 +13,7 @@ Require Import Setoid.
 
 Function appears (under_plus:bool) (v:nat) (f:formula) {struct f} : bool := 
   match f with
-    | Proposition n => EqNat.beq_nat n v
+    | Proposition n => Nat.eqb n v
     | Otimes f1 f2  | And f1 f2 => 
       orb (appears under_plus v f1) (appears under_plus v f2)
     | Oplus f1 f2 | Implies f1 f2 => 

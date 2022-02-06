@@ -18,7 +18,7 @@ Module N_OT <: OrderedType.
   Definition eq_sym : forall x y : t, eq x y -> eq y x := @eq_sym _.
   Definition eq_trans : forall x y z : t, eq x y -> eq y z -> eq x z := @eq_trans _.
 
-  Definition lt_trans : forall x y z : t, lt x y -> lt y z -> lt x z := Lt.lt_trans.
+  Definition lt_trans : forall x y z : t, lt x y -> lt y z -> lt x z := Nat.lt_trans.
   Definition lt_not_eq : forall x y : t, lt x y -> ~ eq x y.
   Proof.
     intros x y H. unfold lt,eq  in *; lia.
